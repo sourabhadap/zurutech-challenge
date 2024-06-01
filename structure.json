@@ -90,7 +90,7 @@
           "name":"parser_test.go",
           "size":1342,
           "time_modified":1700205662,
-          "permissions":"drwxr-xr-x"
+          "permissions":"-rw-r--r--"
         },
         {
           "name":"parser.go",

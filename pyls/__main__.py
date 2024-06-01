@@ -9,7 +9,7 @@ parser.add_argument('-l', action='store_true', help='Use a long listing format',
 parser.add_argument('-r', action='store_true', help='List subdirectories reverse', default=False)
 parser.add_argument('-t', action='store_true', help='List subdirectories by modified time', default=False)
 parser.add_argument('--filter', type=str, help='Filter files by specific criteria: files, directories')
-parser.add_argument('path', nargs='?', default='structure.json',
+parser.add_argument('path', nargs='?', default=None,
                     help='Path to the JSON file representing the directory structure')
 
 args = parser.parse_args()

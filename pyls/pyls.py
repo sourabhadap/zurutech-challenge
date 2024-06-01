@@ -19,7 +19,37 @@ class Pyls:
         with open(file_path, 'r') as file:
             return json.load(file)
 
-    def navigate_to_path(self, directory: Dict[str, Any], path: str) -> Dict[str, Any]:
+    @staticmethod
+    def human_readable_size(size_in_bytes: int) -> str:
+        """
+        Convert a file size in bytes to a human-readable string with appropriate units.
+
+        Args:
+        size_in_bytes (int): The file size in bytes.
+
+        Returns:
+        str: A human-readable string representing the file size with appropriate units.
+        """
+        if size_in_bytes < 0:
+            raise ValueError("Size must be non-negative")
+
+        # Define the units and their corresponding thresholds
+        units = ["B", "K", "MB", "GB", "TB", "PB", "EB"]
+        threshold = 1024
+        if size_in_bytes < threshold:
+            return f"{size_in_bytes}"
+
+        size = float(size_in_bytes)
+        unit = units.pop(0)
+
+        while size >= threshold and units:
+            size /= threshold
+            unit = units.pop(0)
+
+        return f"{size:.1f}{unit}"
+
+    def navigate_to_path(self, path: str) -> Dict[str, Any]:
+        directory = self.directory_structure
         parts = path.split('/')
         for part in parts:
             found = False
@@ -29,9 +59,10 @@ class Pyls:
                     found = True
                     break
             if not found:
-                raise FileNotFoundError(f"error: cannot access '{path}': No such file or directory")
+                print(f"error: cannot access '{path}': No such file or directory")
+                return {"contents": []}
         if len(parts) > 1:
-            directory["name"] = f"{path}"
+            directory["name"] = f" ./{path}"
             directory = {"contents": [directory]}
         return directory
 
@@ -53,6 +84,7 @@ class Pyls:
                 continue
             if self.sort_by_time:
                 item['time_modified'] = time.localtime(item['time_modified'])
+            item['size'] = self.human_readable_size(item['size'])
             items.append(item)
         if self.sort_by_time:
             items = sorted(items, key=lambda t: time.mktime(t['time_modified']))
@@ -76,14 +108,8 @@ class Pyls:
             print(f"{permissions} {size:>5} {time_modified} {name}")
 
     def execute(self):
-
-        # if self.path:
-        #     try:
-        # directory_structure = self.navigate_to_path(self.directory_structure, self.path)
-        # except FileNotFoundError as e:
-        #     print(e)
-        #     return
-
+        if self.path:
+            self.directory_structure = self.navigate_to_path(self.path)
         contents = self.list_directory_contents(self.directory_structure)
         if self.filter_option:
             contents = self.filter_contents(contents)
