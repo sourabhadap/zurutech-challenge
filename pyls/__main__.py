@@ -13,8 +13,7 @@ def filter_contents(contents: List[Dict[str, Any]], filter_option: str) -> List[
         return [item for item in contents if item['permissions'] == "drwxr-xr-x"]
     else:
         print(f"error: {filter_option} is not a valid filter criteria. Available filters are 'dir' and 'file'")
-        sys.exit(1)
-    return contents
+        return []
 
 
 def load_json_file(file_path: str) -> Dict[str, Any]:

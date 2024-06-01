@@ -1,7 +1,7 @@
 import unittest
 from io import StringIO
 import sys
-from pyls.__main__ import list_directory_contents, print_long_format
+from pyls.__main__ import list_directory_contents, print_long_format, filter_contents
 
 
 class TestPyls(unittest.TestCase):
@@ -113,6 +113,46 @@ class TestPyls(unittest.TestCase):
         sys.stdout = sys.__stdout__
 
         self.assertEqual(captured_output.getvalue(), expected_output)
+
+    def test_print_long_format_in_reverse_with_time_modified_dir_filter(self):
+        contents = list_directory_contents(self.structure, reverse=True, sort_time=True)
+        contents = filter_contents(contents, 'dir')
+        expected_output = (
+            "drwxr-xr-x  4096 Nov 17 12:51 parser\n"
+            "drwxr-xr-x  4096 Nov 14 15:58 ast\n"
+            "drwxr-xr-x  4096 Nov 14 15:21 lexer\n"
+            "drwxr-xr-x  4096 Nov 14 14:57 token\n"
+        )
+
+        captured_output = StringIO()
+        sys.stdout = captured_output
+        print_long_format(contents)
+        sys.stdout = sys.__stdout__
+
+        self.assertEqual(captured_output.getvalue(), expected_output)
+
+    def test_print_long_format_in_reverse_with_time_modified_file_filter(self):
+        contents = list_directory_contents(self.structure, reverse=True, sort_time=True)
+        contents = filter_contents(contents, 'file')
+        expected_output = (
+            "-rw-r--r--    74 Nov 14 13:57 main.go\n"
+            "-rw-r--r--    60 Nov 14 13:51 go.mod\n"
+            "-rw-r--r--    83 Nov 14 11:27 README.md\n"
+            "-rw-r--r--  1071 Nov 14 11:27 LICENSE\n"
+        )
+
+        captured_output = StringIO()
+        sys.stdout = captured_output
+        print_long_format(contents)
+        sys.stdout = sys.__stdout__
+
+        self.assertEqual(captured_output.getvalue(), expected_output)
+
+    def test_print_long_format_in_reverse_with_time_modified_invalid_filter(self):
+        contents = list_directory_contents(self.structure, reverse=True, sort_time=True)
+        contents = filter_contents(contents, 'filewsd')
+
+        self.assertEqual(len(contents), 0)
 
 
 if __name__ == '__main__':
