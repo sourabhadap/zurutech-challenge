@@ -1,0 +1,2 @@
+class InvalidFilterCriteriaError(ValueError):
+    pass
