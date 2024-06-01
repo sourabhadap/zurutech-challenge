@@ -10,12 +10,15 @@ def load_json_file(file_path: str) -> Dict[str, Any]:
         return json.load(file)
 
 
-def list_directory_contents(directory: Dict[str, Any], show_all: bool = False) -> List[Dict[str, Any]]:
+def list_directory_contents(directory: Dict[str, Any], show_all: bool = False, reverse: bool = False) -> List[
+    Dict[str, Any]]:
     items = []
     for item in directory.get('contents', []):
         if not show_all and item['name'].startswith('.'):
             continue
         items.append(item)
+    if reverse:
+        items.sort(key=lambda x: x['name'], reverse=True)
     return items
 
 
@@ -36,6 +39,7 @@ def main():
     parser = argparse.ArgumentParser(description="Python ls utility.")
     parser.add_argument('-A', action='store_true', help='Include directory entries whose names begin with a dot (.)')
     parser.add_argument('-l', action='store_true', help='Use a long listing format')
+    parser.add_argument('-r', action='store_true', help='List subdirectories recursively', default=False)
     parser.add_argument('path', nargs='?', default='structure.json',
                         help='Path to the JSON file representing the directory structure')
 
@@ -46,7 +50,7 @@ def main():
         return
 
     directory_structure = load_json_file(args.path)
-    contents = list_directory_contents(directory_structure, show_all=args.A)
+    contents = list_directory_contents(directory_structure, show_all=args.A, reverse=args.r)
 
     if args.l:
         print_long_format(contents)
