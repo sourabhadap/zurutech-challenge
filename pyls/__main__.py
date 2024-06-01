@@ -9,7 +9,7 @@ def load_json_file(file_path: str) -> Dict[str, Any]:
         return json.load(file)
 
 
-def list_directory_contents(directory: Dict[str, Any], show_all: bool) -> List[str]:
+def list_directory_contents(directory: Dict[str, Any], show_all: bool = False) -> List[str]:
     items = []
     for item in directory.get('contents', []):
         if not show_all and item['name'].startswith('.'):

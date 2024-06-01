@@ -1,5 +1,5 @@
 import unittest
-from example import list_directory_contents
+from pyls.__main__ import list_directory_contents
 
 
 class TestPyls(unittest.TestCase):
