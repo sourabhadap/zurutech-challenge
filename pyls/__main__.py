@@ -2,7 +2,19 @@ import argparse
 import json
 import os
 import time
+import sys
 from typing import List, Dict, Any
+
+
+def filter_contents(contents: List[Dict[str, Any]], filter_option: str) -> List[Dict[str, Any]]:
+    if filter_option == 'file':
+        return [item for item in contents if item['permissions'] == "-rw-r--r--"]
+    elif filter_option == 'dir':
+        return [item for item in contents if item['permissions'] == "drwxr-xr-x"]
+    else:
+        print(f"error: {filter_option} is not a valid filter criteria. Available filters are 'dir' and 'file'")
+        sys.exit(1)
+    return contents
 
 
 def load_json_file(file_path: str) -> Dict[str, Any]:
@@ -48,6 +60,7 @@ def main():
     parser.add_argument('-l', action='store_true', help='Use a long listing format')
     parser.add_argument('-r', action='store_true', help='List subdirectories reverse', default=False)
     parser.add_argument('-t', action='store_true', help='List subdirectories by modified time', default=False)
+    parser.add_argument('--filter', type=str, help='Filter files by specific criteria: files, directories')
     parser.add_argument('path', nargs='?', default='structure.json',
                         help='Path to the JSON file representing the directory structure')
 
@@ -59,6 +72,8 @@ def main():
 
     directory_structure = load_json_file(args.path)
     contents = list_directory_contents(directory_structure, show_all=args.A, reverse=args.r, sort_time=args.t)
+    if args.filter:
+        contents = filter_contents(contents, args.filter)
 
     if args.l:
         print_long_format(contents)

@@ -14,19 +14,19 @@
       "name": "LICENSE",
       "size": 1071,
       "time_modified":1699941437,
-      "permissions": "drwxr-xr-x"
+      "permissions": "-rw-r--r--"
     },
     {
       "name": "README.md",
       "size": 83,
       "time_modified": 1699941437,
-      "permissions": "drwxr-xr-x"
+      "permissions": "-rw-r--r--"
     },
     {
       "name":"ast",
       "size":4096,
       "time_modified":1699957739,
-      "permissions":"-rw-r--r--",
+      "permissions":"drwxr-xr-x",
       "contents":[
         {
           "name":"go.mod",
@@ -46,7 +46,7 @@
       "name":"go.mod",
       "size":60,
       "time_modified":1699950073,
-      "permissions":"drwxr-xr-x"
+      "permissions":"-rw-r--r--"
     },
     {
       "name":"lexer",
@@ -102,7 +102,7 @@
           "name":"go.mod",
           "size":533,
           "time_modified":1699958000,
-          "permissions":"drwxr-xr-x"
+          "permissions":"-rw-r--r--"
         }
       ]
     },
@@ -110,7 +110,7 @@
       "name":"token",
       "size":4096,
       "time_modified":1699954070,
-      "permissions":"-rw-r--r--",
+      "permissions":"drwxr-xr-x",
       "contents":[
         {
           "name":"token.go",
@@ -122,7 +122,7 @@
           "name":"go.mod",
           "size":66,
           "time_modified":1699944730,
-          "permissions":"drwxr-xr-x"
+          "permissions":"-rw-r--r--"
         }
       ]
     }
