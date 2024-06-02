@@ -2,18 +2,24 @@ import unittest
 from io import StringIO
 import sys
 import pyls
+from pyls.output_format import OutputFormatFactory
+from pyls.sort_strategy import SortStrategyFactory, ReverseSortDecorator
+from pyls.filter_strategy import FilterStrategyFactory
+from pyls.exceptions import InvalidFilter
 
 
-class TestPyls(unittest.TestCase):
+class TestPyts(unittest.TestCase):
 
     def setUp(self):
-        self.pyls = pyls.Pyls(
+        output_format = OutputFormatFactory.get_output_format("simple")
+        sort_strategy = SortStrategyFactory.get_sort_strategy("")
+        filter_strategy = FilterStrategyFactory().get_filter_strategy("")
+        self.pyls = pyls.Pyts(
             path='',
             show_all=False,
-            long_format=False,
-            reverse=False,
-            sort_by_time=False,
-            filter_option=''
+            output_format=output_format,
+            sort_strategy=sort_strategy,
+            filter_strategy=filter_strategy,
         )
 
     def validate_pyls(self):
@@ -50,8 +56,8 @@ class TestPyls(unittest.TestCase):
             "drwxr-xr-x  4.0K Nov 17 12:51 parser\n"
             "drwxr-xr-x  4.0K Nov 14 14:57 token\n"
         )
-
-        self.pyls.long_format = True
+        output_format = OutputFormatFactory.get_output_format("long")
+        self.pyls.output_format = output_format
         output = self.validate_pyls()
         self.assertEqual(output.getvalue(), expected_output)
 
@@ -66,14 +72,14 @@ class TestPyls(unittest.TestCase):
             "-rw-r--r--    83 Nov 14 11:27 README.md\n"
             "-rw-r--r--  1.0K Nov 14 11:27 LICENSE\n"
         )
-
-        self.pyls.long_format = True
-        self.pyls.reverse = True
+        output_format = OutputFormatFactory.get_output_format("long")
+        sort_strategy = ReverseSortDecorator(self.pyls.sort_strategy)
+        self.pyls.output_format = output_format
+        self.pyls.sort_strategy = sort_strategy
         output = self.validate_pyls()
         self.assertEqual(output.getvalue(), expected_output)
 
     def test_print_long_format_in_reverse_with_time_modified(self):
-
         expected_output = (
             "drwxr-xr-x  4.0K Nov 17 12:51 parser\n"
             "drwxr-xr-x  4.0K Nov 14 15:58 ast\n"
@@ -85,9 +91,11 @@ class TestPyls(unittest.TestCase):
             "-rw-r--r--  1.0K Nov 14 11:27 LICENSE\n"
         )
 
-        self.pyls.long_format = True
-        self.pyls.sort_by_time = True
-        self.pyls.reverse = True
+        output_format = OutputFormatFactory.get_output_format("long")
+        sort_strategy = SortStrategyFactory.get_sort_strategy("time")
+        sort_strategy = ReverseSortDecorator(sort_strategy)
+        self.pyls.output_format = output_format
+        self.pyls.sort_strategy = sort_strategy
         output = self.validate_pyls()
         self.assertEqual(output.getvalue(), expected_output)
 
@@ -99,10 +107,13 @@ class TestPyls(unittest.TestCase):
             "drwxr-xr-x  4.0K Nov 14 14:57 token\n"
         )
 
-        self.pyls.long_format = True
-        self.pyls.sort_by_time = True
-        self.pyls.reverse = True
-        self.pyls.filter_option = 'dir'
+        output_format = OutputFormatFactory.get_output_format("long")
+        sort_strategy = SortStrategyFactory.get_sort_strategy("time")
+        sort_strategy = ReverseSortDecorator(sort_strategy)
+        filter_strategy = FilterStrategyFactory.get_filter_strategy("dir")
+        self.pyls.filter_strategy = filter_strategy
+        self.pyls.output_format = output_format
+        self.pyls.sort_strategy = sort_strategy
         output = self.validate_pyls()
         self.assertEqual(output.getvalue(), expected_output)
 
@@ -114,54 +125,66 @@ class TestPyls(unittest.TestCase):
             "-rw-r--r--  1.0K Nov 14 11:27 LICENSE\n"
         )
 
-        self.pyls.long_format = True
-        self.pyls.sort_by_time = True
-        self.pyls.reverse = True
-        self.pyls.filter_option = 'file'
+        output_format = OutputFormatFactory.get_output_format("long")
+        sort_strategy = SortStrategyFactory.get_sort_strategy("time")
+        sort_strategy = ReverseSortDecorator(sort_strategy)
+        filter_strategy = FilterStrategyFactory.get_filter_strategy("file")
+        self.pyls.filter_strategy = filter_strategy
+        self.pyls.output_format = output_format
+        self.pyls.sort_strategy = sort_strategy
         output = self.validate_pyls()
         self.assertEqual(output.getvalue(), expected_output)
+
     #
     def test_print_long_format_in_reverse_with_time_modified_invalid_filter(self):
-        self.pyls.long_format = True
-        self.pyls.sort_time = True
-        self.pyls.show_all = True
-        self.pyls.filter_option = 'filewsd'
         expected_output = "error: filewsd is not a valid filter criteria. Available filters are 'dir' and 'file'"
 
-        output = self.validate_pyls()
-        self.assertEqual(output.getvalue().strip(), expected_output)
+        output_format = OutputFormatFactory.get_output_format("long")
+        sort_strategy = SortStrategyFactory.get_sort_strategy("time")
+        sort_strategy = ReverseSortDecorator(sort_strategy)
+        with self.assertRaises(InvalidFilter) as cm:
+            filter_strategy = FilterStrategyFactory.get_filter_strategy("filewsd")
+            self.pyls.filter_strategy = filter_strategy
+            self.pyls.output_format = output_format
+            self.pyls.sort_strategy = sort_strategy
+            output = self.validate_pyls()
+        self.assertEqual(str(cm.exception.__str__()), expected_output)
 
     def test_handle_paths(self):
-        self.pyls.long_format = True
-        self.pyls.reverse = True
-        self.pyls.path = 'parser'
         expected_output = (
             "-rw-r--r--   533 Nov 14 16:03 go.mod\n"
             "-rw-r--r--  1.6K Nov 17 12:05 parser.go\n"
             "-rw-r--r--  1.3K Nov 17 12:51 parser_test.go\n"
         )
-
+        output_format = OutputFormatFactory.get_output_format("long")
+        sort_strategy = ReverseSortDecorator(self.pyls.sort_strategy)
+        self.pyls.output_format = output_format
+        self.pyls.sort_strategy = sort_strategy
+        self.pyls.path = "parser"
         output = self.validate_pyls()
         self.assertEqual(output.getvalue(), expected_output)
 
     def test_relative_handle_paths(self):
-        self.pyls.long_format = True
-        self.pyls.reverse = True
-        self.pyls.path = 'parser/parser.go'
         expected_output = (
             "-rw-r--r--  1.6K Nov 17 12:05  ./parser/parser.go\n"
         )
-
+        output_format = OutputFormatFactory.get_output_format("long")
+        sort_strategy = ReverseSortDecorator(self.pyls.sort_strategy)
+        self.pyls.output_format = output_format
+        self.pyls.sort_strategy = sort_strategy
+        self.pyls.path = 'parser/parser.go'
         output = self.validate_pyls()
         self.assertEqual(output.getvalue(), expected_output)
 
     def test_invalid_handle_paths(self):
-        self.pyls.long_format = True
-        self.pyls.reverse = True
-        self.pyls.path = 'parser/parser.go.cscsd'
         expected_output = (
             "error: cannot access 'parser/parser.go.cscsd': No such file or directory"
         )
+        output_format = OutputFormatFactory.get_output_format("long")
+        sort_strategy = ReverseSortDecorator(self.pyls.sort_strategy)
+        self.pyls.output_format = output_format
+        self.pyls.sort_strategy = sort_strategy
+        self.pyls.path = 'parser/parser.go.cscsd'
         output = self.validate_pyls()
         self.assertEqual(output.getvalue().strip(), expected_output)
 

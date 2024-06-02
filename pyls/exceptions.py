@@ -1,2 +1,6 @@
-class InvalidFilterCriteriaError(ValueError):
+class InvalidFilter(ValueError):
+    pass
+
+
+class InvalidPath(FileNotFoundError):
     pass

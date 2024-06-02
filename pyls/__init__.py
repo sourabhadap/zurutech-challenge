@@ -1,3 +1,3 @@
-__all__ = ['pyls']
+__all__ = ["pyls.py"]
 
-from .pyls import Pyls
+from .pyls import Pyts
