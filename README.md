@@ -41,7 +41,7 @@ Once installed, `pyls` can be used from the command line. Below are examples of 
 
 1. **Basic Listing**:
    ```bash
-   pyls
+   python -m pyls
    ```
    Output:
    ```
@@ -50,7 +50,7 @@ Once installed, `pyls` can be used from the command line. Below are examples of 
 
 2. **Show All Files Including Hidden**:
    ```bash
-   pyls -A
+   python -m pyls -A
    ```
    Output:
    ```
@@ -59,7 +59,7 @@ Once installed, `pyls` can be used from the command line. Below are examples of 
 
 3. **Detailed Listing**:
    ```bash
-   pyls -l
+   python -m pyls -l
    ```
    Output:
    ```
@@ -75,7 +75,7 @@ Once installed, `pyls` can be used from the command line. Below are examples of 
 
 4. **Reverse Order**:
    ```bash
-   pyls -l -r
+   python -m pyls -l -r
    ```
    Output:
    ```
@@ -91,7 +91,7 @@ Once installed, `pyls` can be used from the command line. Below are examples of 
 
 5. **Sorted by Modification Time**:
    ```bash
-   pyls -l -r -t
+   python -m pyls -l -r -t
    ```
    Output:
    ```
@@ -107,7 +107,7 @@ Once installed, `pyls` can be used from the command line. Below are examples of 
 
 6. **Filter by Type**:
    ```bash
-   pyls -l -r -t --filter=dir
+   python -m pyls -l -r -t --filter=dir
    ```
    Output:
    ```
@@ -119,7 +119,7 @@ Once installed, `pyls` can be used from the command line. Below are examples of 
 
 7. **Human-Readable Sizes**:
    ```bash
-   pyls -l -h parser
+   python -m pyls -l -h parser
    ```
    Output:
    ```
@@ -130,7 +130,7 @@ Once installed, `pyls` can be used from the command line. Below are examples of 
 
 8. **Help**:
    ```bash
-   pyls --help
+   python -m pyls --help
    ```
 
 ## Testing
